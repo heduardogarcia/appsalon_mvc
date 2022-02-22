@@ -1,0 +1,19 @@
+{
+    "name": "mt-sistemas02/salon",
+    "description": "Salon en php moderno , javascript , gulp ,activerecord",
+    "autoload": {
+        "psr-4": {
+           
+            "MVC\\" : "./",
+            "Controllers\\": "./controllers",
+            "Model\\" :"./models"
+        }
+    },
+    "authors": [
+        {
+            "name": "heduardogarciacamacho",
+            "email": "heduardo_garcia@hotmail.com"
+        }
+    ],
+    "require": {}
+}

@@ -11,14 +11,13 @@ body {
     flex-direction: column;
     background-color: v.$negro;
     color: v.$blanco;
+    font-family: v.$fuente_principal;
+    font-size: 1.6rem;
 }
 *, *:before, *:after {
     box-sizing: inherit;
 }
-body {
-    font-family: v.$fuente_principal;
-    font-size: 1.6rem;
-}
+
 .contenedor {
     width: 95%;
     max-width: 1200px;
@@ -31,3 +30,6 @@ a {
 img {
     max-width: 100%;
 }
+
+
+
