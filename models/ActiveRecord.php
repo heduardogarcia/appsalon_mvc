@@ -13,6 +13,9 @@ class ActiveRecord {
     // Definir la conexión a la BD - includes/database.php
     public static function setDB($database) {
         self::$db = $database;
+
+       // debuguear($database);
+
     }
 
     public static function setAlerta($tipo, $mensaje) {
@@ -63,6 +66,8 @@ class ActiveRecord {
     // Identificar y unir los atributos de la BD
     public function atributos() {
         $atributos = [];
+
+       //debuguear(static::$columnasDB);
         foreach(static::$columnasDB as $columna) {
             if($columna === 'id') continue;
             $atributos[$columna] = $this->$columna;
@@ -72,11 +77,14 @@ class ActiveRecord {
 
     // Sanitizar los datos antes de guardarlos en la BD
     public function sanitizarAtributos() {
+      
         $atributos = $this->atributos();
         $sanitizado = [];
         foreach($atributos as $key => $value ) {
             $sanitizado[$key] = self::$db->escape_string($value);
         }
+
+      //  debuguear($sanitizado);
         return $sanitizado;
     }
 
@@ -92,6 +100,8 @@ class ActiveRecord {
     // Registros - CRUD
     public function guardar() {
         $resultado = '';
+
+        //debuguear($this->id);
         if(!is_null($this->id)) {
             // actualizar
             $resultado = $this->actualizar();
@@ -109,7 +119,15 @@ class ActiveRecord {
         return $resultado;
     }
 
-    // Busca un registro por su id
+    // Busca un registro filtrado por columna
+    public static function where($columna, $valor) {
+        $query = "SELECT * FROM " . static::$tabla  ." WHERE ${columna}= '${valor}'";
+        $resultado = self::consultarSQL($query);
+
+        //debuguear($query);
+        return array_shift( $resultado ) ;
+    }
+
     public static function find($id) {
         $query = "SELECT * FROM " . static::$tabla  ." WHERE id = ${id}";
         $resultado = self::consultarSQL($query);
@@ -126,6 +144,8 @@ class ActiveRecord {
     // crea un nuevo registro
     public function crear() {
         // Sanitizar los datos
+        //debuguear(static::$columnasDB);
+        //debuguear($atributos);
         $atributos = $this->sanitizarAtributos();
 
         // Insertar en la base de datos
@@ -135,6 +155,8 @@ class ActiveRecord {
         $query .= join("', '", array_values($atributos));
         $query .= " ') ";
 
+        //debuguear($atributos);
+        //debuguear($query);
         // Resultado de la consulta
         $resultado = self::$db->query($query);
         return [

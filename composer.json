@@ -6,7 +6,8 @@
            
             "MVC\\" : "./",
             "Controllers\\": "./controllers",
-            "Model\\" :"./models"
+            "Model\\" :"./models",
+            "Classes\\" :"./classes"
         }
     },
     "authors": [
@@ -15,5 +16,7 @@
             "email": "heduardo_garcia@hotmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "phpmailer/phpmailer": "^6.6"
+    }
 }

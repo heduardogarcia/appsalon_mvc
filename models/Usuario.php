@@ -4,7 +4,7 @@ namespace Model;
 class Usuario extends ActiveRecord{
 
     protected static $tabla ='usuarios';
-    protected static $columnaDB =['id','nombre','apellido','email','password',
+    protected static $columnasDB =['id','nombre','apellido','email','password',
     'telefono','admin','confirmado','token'];
 
     public $id;
@@ -24,8 +24,8 @@ class Usuario extends ActiveRecord{
         $this->email=$args['email'] ?? '';
         $this->password=$args['password'] ?? '';
         $this->telefono=$args['telefono'] ?? '';
-        $this->admin=$args['admin'] ?? null;
-        $this->confirmado=$args['confirmado'] ?? null;
+        $this->admin=$args['admin'] ?? 0;
+        $this->confirmado=$args['confirmado'] ?? 0;
         $this->token=$args['token'] ?? '';
     }
 
@@ -63,6 +63,20 @@ class Usuario extends ActiveRecord{
         }
         return $resultado;
         //debuguear($resultado);
+    }
+
+    public function hashPassword(){
+        $this->password= password_hash($this->password,PASSWORD_BCRYPT);
+    }
+
+    public function crearToken(){
+        
+
+        $this->token = uniqid();
+    }
+
+    public function validarLogin(){
+        
     }
 
 }

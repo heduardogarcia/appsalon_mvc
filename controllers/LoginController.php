@@ -1,12 +1,22 @@
 <?php
 namespace Controllers{
 
+use Classes\Email;
+
     use Model\Usuario;
     use MVC\Router;
 
     class LoginController{
         public static function login(Router $router){
-                $router->render('auth/login');
+            $alertas =[];
+            if($_SERVER['REQUEST_METHOD']==='POST'){
+                $auth= new Usuario($_POST);
+                $auth->validarLogin();
+                debuguear($auth);
+            }
+                $router->render('auth/login',[
+                    'alertas'=>$alertas
+                ]);
         }
         public static function logout(){
             echo "desde logout";
@@ -17,36 +27,82 @@ namespace Controllers{
         public static function recuperar(){
             echo "desde recuperar";
         }
-        public static function crear(Router $router){
-           // debuguear($_SERVER);
-
-           $usuario = new Usuario;
-
-           $alertas=[];
-            if($_SERVER['REQUEST_METHOD']==='POST'){
-                //echo "Enviaste el formulario";
-               // $usuario = new Usuario($_POST);
-                //debuguear($usuario);
+        public static function crear(Router $router) {
+            $usuario = new Usuario;
+    
+            // Alertas vacias
+            $alertas = [];
+            if($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $usuario->sincronizar($_POST);
-                $alertas=$usuario->validarNuevaCuenta();
-
-                if(empty($alertas)){
-                    //echo "pasaste la validacion";
-                    $resultado=$usuario->existeUsuario();
-                    if($resultado->num_rows){
+                $alertas = $usuario->validarNuevaCuenta();
+                
+                // Revisar que alerta este vacio
+                if(empty($alertas)) {
+                    // Verificar que el usuario no este registrado
+                    $resultado = $usuario->existeUsuario();
+                    
+                    if($resultado->num_rows) {
                         $alertas = Usuario::getAlertas();
-                    }
-                    else{
+                    } else {
+                        // Hashear el Password
+                        $usuario->hashPassword();
                         
-                        debuguear($usuario);
+                        // Generar un Token único
+                        $usuario->crearToken();
+                        
+                        // Enviar el Email
+                        $email = new Email($usuario->nombre, $usuario->email, $usuario->token);
+                        $email->enviarConfirmacion();
+                        
+                        //debuguear($usuario);
+                        // Crear el usuario
+                        $resultado = $usuario->guardar();
+
+                        //debuguear ($resultado);
+                        // debuguear($usuario);
+                        if($resultado) {
+                            header('Location: /mensaje');
+                        }
                     }
                 }
-
-               // debuguear($alertas);
             }
-        $router->render('auth/crear-cuenta',['usuario'=>$usuario,
-        'alertas' => $alertas
-            ]);                        
+            
+            $router->render('auth/crear-cuenta', [
+                'usuario' => $usuario,
+                'alertas' => $alertas
+            ]);
+        }
+               
+        public static function mensaje(Router $router){
+            $router->render('auth/mensaje');
+        }
+        public static function confirmar(Router $router){
+            $alertas= [];
+
+            $token = s($_GET['token']);
+
+            $usuario = Usuario::where('token',$token);
+
+            //debuguear($usuario);
+
+            if(empty ($usuario)){
+                Usuario::setAlerta('error','Token No Válido');
+            }
+            else{
+
+                $usuario->confirmado="1";
+                $usuario->token=null;
+                $usuario->guardar();
+                Usuario::setAlerta('exito','Cuenta Comprobada Correctamente');
+                //debuguear($usuario);
+
+
+            }
+            $alertas= Usuario::getAlertas();
+            $router->render('auth/confirmar-cuenta',[
+                'alertas' => $alertas
+            ]);
         }
     }
+
 }
