@@ -46,4 +46,35 @@ class Email{
         $mail->send();
         
     }
+    public function enviarInstrucciones(){
+        $mail= new PHPMailer();
+
+        //Server settings
+      //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+
+      $mail->isSMTP();
+      $mail->Host = 'smtp.mailtrap.io';
+      $mail->SMTPAuth = true;
+      $mail->Port = 2525;
+      $mail->Username = '3c06370a9d3d3f';
+      $mail->Password = '30b06986d4fb6f';   
+
+      $mail->setFrom('admin@bienesraices.com');
+      $mail->addAddress('admin@bienesraices.com','AppSalon.com');
+      $mail->Subject='Restablece tu password';
+
+      $mail->isHTML(TRUE);
+      $mail->CharSet='UTF-8';
+
+      $contenido = "<html>";
+      $contenido .="<p><strong>Hola " .$this->nombre ."</strong> Has solicitado restablecer tu password, sigue el siguiente enlace para hacerlo.</p>";
+      $contenido .="<p> Presiona aqui: <a href='http://localhost:3000/recuperar?token=". $this->token ."'>Restablecer Password</a></p>";
+      $contenido .= "<p>Si tu no solicitaste este cambio, puedes ignorar el mensaje</p>";
+      $contenido .= "</html>";
+      //debuguear($contenido);
+      $mail->Body = $contenido;
+
+      $mail->send();
+     
+    }
 }
