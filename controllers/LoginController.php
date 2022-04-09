@@ -54,7 +54,11 @@ use Classes\Email;
                 ]);
         }
         public static function logout(){
-            echo "desde logout";
+            
+           session_start();
+            $_SESSION= [];
+            header('Location:/');
+            // echo "desde logout";
         }
         public static function olvide( Router $router){
 

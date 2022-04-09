@@ -128,6 +128,14 @@ class ActiveRecord {
         return array_shift( $resultado ) ;
     }
 
+     //Consulta plana de sql para cuando los metodos del modelo no son suficientes
+     public static function SQL($query) {
+         
+        $resultado = self::consultarSQL($query);
+       //debuguear($query);
+        return $resultado;
+    }
+
     public static function find($id) {
         $query = "SELECT * FROM " . static::$tabla  ." WHERE id = ${id}";
         $resultado = self::consultarSQL($query);
